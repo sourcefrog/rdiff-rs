@@ -3,6 +3,7 @@
 # passed in.
 PROFILE=debug
 
+CFLAGS=-Wall -Werror
 BINDIR=../target/$(PROFILE)
 BIN=$(BINDIR)/ctests
 
@@ -12,7 +13,7 @@ check: $(BIN)
 SRCS = src/ctests.c src/version_test.c
 
 $(BIN): ../target/$(PROFILE)/liblibrdiff_capi.a $(SRCS)
-	$(CC) -o $@ $(SRCS) \
+	$(CC) -o $@ $(SRCS) $(CFLAGS) \
 		-L ../target/$(PROFILE)/ -l librdiff_capi \
 		-I ../include
 
