@@ -19,9 +19,4 @@ For an optimized build use `cargo build --release` and the output will be in
 
 ## Testing
 
-The `ctests` subdirectory contains tests written in C that exercise the C API.
-Run them with
-
-```shell
-make -C ctests check
-```
+`cargo test` will build and run tests written in C that exercise the C API.
