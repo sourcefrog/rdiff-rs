@@ -38,4 +38,7 @@ pub fn test_versions_consistent() {
     let l = their_v.len();
     assert_eq!(VERSION.len(), l + 1);
     assert_eq!(VERSION[0..l], their_v.to_string());
+
+    // It should also be consistent with the Cargo version for librdiff-capi-rs.
+    assert_eq!(their_v, env!("CARGO_PKG_VERSION"));
 }
