@@ -1,0 +1,13 @@
+[package]
+name = "librdiff-capi"
+version = "3.0.0"
+authors = ["Martin Pool <mbp@sourcefrog.net>"]
+
+[lib]
+# See https://github.com/rust-lang/rust/issues/19680
+# XXX: Is this still needed with separated crates?
+crate-type = ["rlib", "dylib", "lib"]
+
+[dependencies]
+libc = "0.2"
+librdiff = { version = "^3.0.0", path = "../librdiff-rs" }
