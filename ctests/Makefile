@@ -1,4 +1,6 @@
 # $PROFILE can be set to 'release' on the command line to link against that.
+# build.rs and run_ctests.rs should arrange for the right value to be
+# passed in.
 PROFILE=debug
 
 BINDIR=../target/$(PROFILE)
