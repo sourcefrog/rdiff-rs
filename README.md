@@ -7,3 +7,10 @@ The intention is to be fairly compatible with the existing librsync public API
 
 However total compatibility is not guaranteed: API warts may be removed,
 and some things may be impractical to map to Rust.
+
+The `ctests` subdirectory contains tests written in C that exercise the C API.
+Run them with
+
+```shell
+make -C ctests check
+```
