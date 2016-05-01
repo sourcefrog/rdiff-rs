@@ -5,7 +5,9 @@ authors = ["Martin Pool <mbp@sourcefrog.net>"]
 build = "build.rs"
 
 [lib]
-# See https://github.com/rust-lang/rust/issues/19680
+# Build a staticlib, to be used by C programs. Also build a rlib
+# so it can be linked into Rust programs, although that should be rare aside
+# from these tests.
 crate-type = ["staticlib", "rlib"]
 
 [dependencies]
