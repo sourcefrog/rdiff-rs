@@ -18,8 +18,24 @@
 extern crate libc;
 extern crate librdiff;
 
+/// Nul-terminated version number for ease of C binding.
+pub static VERSION: &'static str = "3.0.0\0";
+
 #[no_mangle]
 pub extern fn rs_version() -> *const libc::c_char {
     // Version from environment has nul termination (I think we can count on this?)
-    return librdiff::VERSION.as_ptr() as *const libc::c_char;
+    return VERSION.as_ptr() as *const libc::c_char;
+}
+
+
+#[cfg(test)]
+#[test]
+pub fn test_versions_consistent() {
+    // I can't work out how to automatically store a static CString, but
+    // let's at least check they're in sync, and that ours has a nul.
+    assert_eq!(VERSION.as_bytes()[VERSION.len()-1], 0);
+    let their_v = librdiff::VERSION;
+    let l = their_v.len();
+    assert_eq!(VERSION.len(), l + 1);
+    assert_eq!(VERSION[0..l], their_v.to_string());
 }
