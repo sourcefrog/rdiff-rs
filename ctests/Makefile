@@ -1,15 +1,16 @@
-check: target/debug/ctest
-	$<
+# $PROFILE can be set to 'release' on the command line to link against that.
+PROFILE=debug
 
-TESTBIN = target/debug/ctest
+check: target/$(PROFILE)/ctests
+	$<
 
 SRCS = src/ctests.c src/version_test.c
 
-target/debug/ctest: ../target/debug/liblibrdiff_capi.a $(SRCS)
-	mkdir -p target/debug
+target/$(PROFILE)/ctests: ../target/$(PROFILE)/liblibrdiff_capi.a $(SRCS)
+	mkdir -p target/$(PROFILE)
 	$(CC) -o $@ $(SRCS) \
-		-L ../target/debug/ -l librdiff_capi \
+		-L ../target/$(PROFILE)/ -l librdiff_capi \
 		-I ../include
 
 clean:
-	[ -f target/debug/ctest ] && rm target/debug/ctest
+	ls target/*/ctests >/dev/null && rm target/*/ctests
