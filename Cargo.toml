@@ -2,6 +2,7 @@
 name = "librdiff-capi"
 version = "3.0.0"
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
+build = "build.rs"
 
 [lib]
 # See https://github.com/rust-lang/rust/issues/19680

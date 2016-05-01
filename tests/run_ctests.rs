@@ -9,12 +9,12 @@ use std::process::Command;
 /// Build and run the tests written in C that exercise the Rust->C bindings.
 #[test]
 pub fn run_ctests() {
-    // TODO: Maybe automatically use the release directory if doing a release
-    // build? Seems a bit complicated.
+    // Passed through build.rs.
     // https://users.rust-lang.org/t/conditional-compilation-for-debug-release/1098/7?u=sourcefrog
+    let profile = if cfg!(profile = "debug") { "PROFILE=debug" } else { "PROFILE=release" };
 
     match Command::new("make")
-        .args(&["-C", "ctests", "check"])
+        .args(&["-C", "ctests", profile, "check"])
         .status() {
         Ok(status) if status.success() => (),
         Err(e) => panic!("failed to run ctests: {}", e),
