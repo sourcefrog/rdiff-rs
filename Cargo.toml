@@ -1,5 +1,5 @@
 [package]
-name = "librsync_impl"
+name = "librdiff"
 version = "3.0.0"
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
 

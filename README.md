@@ -1,20 +1,24 @@
-# librsync-impl-rs [pre-alpha]
+# librdiff-rs [pre-alpha]
 
 This is the start of a compatible pure Rust implementation of librsync
 (http://librsync.sourcefrog.net/).
 
+To reduce confusion with the `rsync` tool and with the C implementation, this
+is called `librdiff` but the formats, capabilities and API will be the same.
+
 The plan is to provide this in four layers:
-  * [`librsync-impl-rs`](https://github.com/sourcefrog/librsync-impl-rs):
+
+  * [`librdiff-rs`](https://github.com/sourcefrog/librdiff-rs):
     pure Rust, non-blocking state machine, on buffers provided by caller
     * Build just with Cargo.
     * Unit tests in Rust.
-    * Cargo crate name `librsync_impl`.
+    * Cargo crate name `librdiff`.
 
   * [`rdiff-rs`](https://github.com/sourcefrog/rdiff-rs):
-    a pure Rust binary based on `librsync-impl-rs`.
+    a pure Rust binary based on `librdiff-rs`.
     * Cargo crate `rdiff`.
 
-  * [`librsync-capi-rs`](https://github.com/sourcefrog/librsync-capi-rs):
+  * [`librdiff-capi-rs`](https://github.com/sourcefrog/librdiff-capi-rs):
     A C API backed by the Rust implementation.
     * The same as the existing librsync C API except where there are reasons
       to clean it up.
@@ -26,4 +30,4 @@ The plan is to provide this in four layers:
     * They produce the exact same output (however, deltas could be better.)
     * Can consume each other's output.
 
-More plans: https://github.com/sourcefrog/librsync-impl-rs/wiki
+More plans: https://github.com/sourcefrog/librdiff-rs/wiki
