@@ -20,3 +20,8 @@ For an optimized build use `cargo build --release` and the output will be in
 ## Testing
 
 `cargo test` will build and run tests written in C that exercise the C API.
+
+## Changes vs librsync 2.0
+
+* The library version is available through `rs_version()` rather than
+  `rs_librsync_version[]`.
