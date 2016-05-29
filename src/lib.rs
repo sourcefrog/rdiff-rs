@@ -18,6 +18,9 @@
 extern crate libc;
 extern crate librdiff;
 
+use librdiff::RsResult;
+use librdiff::RsResult::*;
+
 /// Nul-terminated version number for ease of C binding.
 pub static VERSION: &'static str = "3.0.0\0";
 
@@ -27,6 +30,37 @@ pub extern fn rs_version() -> *const libc::c_char {
     return VERSION.as_ptr() as *const libc::c_char;
 }
 
+#[no_mangle]
+pub extern fn rs_strerror(r: RsResult) -> *const libc::c_char {
+    match r {
+        RS_DONE => b"OK\0".as_ptr() as *const libc::c_char,
+
+        // case RS_DONE:
+        //     return "OK";
+        // case RS_RUNNING:
+        //     return "still running";
+        // case RS_BLOCKED:
+        //     return "blocked waiting for input or output buffers";
+        // case RS_BAD_MAGIC:
+        //     return "bad magic number at start of stream";
+        // case RS_INPUT_ENDED:
+        //     return "unexpected end of input";
+        // case RS_CORRUPT:
+        //     return "stream corrupt";
+        // case RS_UNIMPLEMENTED:
+        //     return "unimplemented case";
+        // case RS_MEM_ERROR:
+        //     return "out of memory";
+        // case RS_IO_ERROR:
+        //     return "IO error";
+        // case RS_SYNTAX_ERROR:
+        //     return "bad command line syntax";
+        // case RS_INTERNAL_ERROR:
+        //     return "library internal error";
+        //
+        _ => b"unexplained problem\0".as_ptr() as *const libc::c_char,
+    }
+}
 
 #[cfg(test)]
 #[test]
