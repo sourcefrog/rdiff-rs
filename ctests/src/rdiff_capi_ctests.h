@@ -1,1 +1,3 @@
-int version_test(void);
+#include <stdbool.h>
+
+bool version_test(void);
