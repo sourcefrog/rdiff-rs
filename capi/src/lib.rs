@@ -1,4 +1,4 @@
-// librsync(rust) -- library for network deltas
+// librdiff(rust) -- library for network deltas
 // Copyright 2015, 2016 Martin Pool.
 
 // This program is free software; you can redistribute it and/or
@@ -15,7 +15,9 @@
 // License along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-pub static VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
+// TODO: Expose version string and number.
+
 
 #[repr(C)]
 pub enum RsResult {

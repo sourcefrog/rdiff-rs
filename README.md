@@ -7,18 +7,18 @@ is called `librdiff` but the formats, capabilities and API will be the same.
 
 The plan is to provide this in four layers:
 
-* `lib`
-  (crate `librsync`):
+* `src/`
+  (crate `librdiff`):
   librsync algorithm and format implemented in pure Rust, including
   unit tests.
 
-* `bin/rdiff`
+* `src/bin/rdiff`
     a pure Rust binary based on `librsync-rs`, providing an
     `rdiff` command line tool similar to and compatible in
     format and command line syntax with
     `rdiff` from C librsync.
 
-* `lib/capi`:
+* `capi/`:
     A C API backed by the Rust implementation.
   * The same as the existing librsync C API except where this is
     infeasible or the existing API is very problematic.
@@ -26,9 +26,11 @@ The plan is to provide this in four layers:
   * Build with Cargo(?)
   * Includes tests, in C, for the wrapper and implementation.
 
-* `crosstest`: check interoperability between C and Rust librsync:
-  * They produce the exact same signatures, the deltas apply to
-    produce the same results, and they can consume each other's
-    deltas.
+* `src/bin/crosstest`: check interoperability between C and Rust
+    versions of `rdiff`:
+  1. They produce the exact same signatures
+  2. They can consume each others' deltas to produce the same resulting
+     new file.
+  3. (It's not required they produce the exact same delta.)
 
 More plans: <https://github.com/sourcefrog/librsync-rs/wiki>
