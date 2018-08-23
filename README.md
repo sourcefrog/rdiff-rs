@@ -1,33 +1,34 @@
 # librdiff-rs [pre-alpha]
 
-This is the start of a compatible pure Rust implementation of librsync
-(http://librsync.sourcefrog.net/).
+This is the start of a compatible pure Rust implementation of librsync.
 
 To reduce confusion with the `rsync` tool and with the C implementation, this
 is called `librdiff` but the formats, capabilities and API will be the same.
 
 The plan is to provide this in four layers:
 
-  * [`librdiff-rs`](https://github.com/sourcefrog/librdiff-rs):
-    pure Rust, non-blocking state machine, on buffers provided by caller
-    * Build just with Cargo.
-    * Unit tests in Rust.
-    * Cargo crate name `librdiff`.
+* `lib`
+  (crate `librsync`):
+  librsync algorithm and format implemented in pure Rust, including
+  unit tests.
 
-  * [`rdiff-rs`](https://github.com/sourcefrog/rdiff-rs):
-    a pure Rust binary based on `librdiff-rs`.
-    * Cargo crate `rdiff`.
+* `bin/rdiff`
+    a pure Rust binary based on `librsync-rs`, providing an
+    `rdiff` command line tool similar to and compatible in
+    format and command line syntax with
+    `rdiff` from C librsync.
 
-  * [`librdiff-capi-rs`](https://github.com/sourcefrog/librdiff-capi-rs):
+* `lib/capi`:
     A C API backed by the Rust implementation.
-    * The same as the existing librsync C API except where there are reasons
-      to clean it up.
-    * Includes a C header file, forked from the C API's `librsync.h`.
-    * Build with Cargo(?)
-    * Includes tests, in C, for the wrapper and implementation.
+  * The same as the existing librsync C API except where this is
+    infeasible or the existing API is very problematic.
+  * Includes a C header file, forked from the C API's `librsync.h`.
+  * Build with Cargo(?)
+  * Includes tests, in C, for the wrapper and implementation.
 
-  * `librsync-crosstest`: check interoperability
-    * They produce the exact same output (however, deltas could be better.)
-    * Can consume each other's output.
+* `crosstest`: check interoperability between C and Rust librsync:
+  * They produce the exact same signatures, the deltas apply to
+    produce the same results, and they can consume each other's
+    deltas.
 
-More plans: https://github.com/sourcefrog/librdiff-rs/wiki
+More plans: <https://github.com/sourcefrog/librsync-rs/wiki>
