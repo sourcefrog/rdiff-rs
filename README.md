@@ -1,25 +1,27 @@
-# librdiff-rs [pre-alpha]
+# rdiff-rs [pre-alpha]
 
-This is the start of a compatible pure Rust implementation of librsync.
+rdiff is a tool and library to generate binary deltas against a signature summarizing
+the contents of an old file. The deltas can only be applied to the exact old file
+contents from which they're generated.
 
-To reduce confusion with the `rsync` tool and with the C implementation, this
-is called `librdiff` but the formats, capabilities and API will be the same as
-`librsync` (and not the same as `rsync`).
+This is the start of a pure Rust implementation of rdiff, both the command line
+tool and the library. 
+The original C implementation is at https://github.com/librsync/librsync.
+
+rdiff uses the same algorithm, but not the same format, as rsync.
 
 The plan is to provide this in four layers:
 
 * `src/`
-  (crate `librdiff`):
-  librsync algorithm and format implemented in pure Rust, including
+  (crate `rdiff`):
+  rdiff algorithm and format implemented in pure Rust, including
   unit tests.
 
-* `src/bin/rdiff`
-    a pure Rust binary based on `librsync-rs`, providing an
-    `rdiff` command line tool similar to and compatible in
-    format and command line syntax with
+* `rdiff` binary from `src/main.rs`:
+    a command line tool compatible in format and command line syntax with
     `rdiff` from C librsync.
 
-* `capi/`, crate `librdiff-capi`:
+* `capi/`, crate `rdiff-capi`:
     A C API backed by the Rust implementation.
   * The same as the existing librsync C API except where this is
     infeasible or the existing API is very problematic.
@@ -27,14 +29,14 @@ The plan is to provide this in four layers:
   * Build with Cargo(?)
   * Includes tests, in C, for the wrapper and implementation.
 
-* `src/bin/crosstest`: check interoperability between C and Rust
-    versions of `rdiff`:
+* `crosstest`: check interoperability between C and Rust
+  versions of `rdiff`:
   1. They produce the exact same signatures
   2. They can consume each others' deltas to produce the same resulting
      new file.
   3. (It's not required they produce the exact same delta.)
 
-More plans: <https://github.com/sourcefrog/librdiff-rs/wiki>
+More plans: <https://github.com/sourcefrog/rdiff-rs/wiki>
 
 ## License
 

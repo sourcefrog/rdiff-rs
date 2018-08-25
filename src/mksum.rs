@@ -1,4 +1,4 @@
-// librdiff(rust) -- library for network deltas
+// rdiff(rust) -- library for network deltas
 // Copyright 2018 Martin Pool.
 
 //! Generate file signatures.

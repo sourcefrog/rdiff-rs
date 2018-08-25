@@ -1,8 +1,8 @@
 // Thanks to Zarathustra30 in https://stackoverflow.com/a/31760328/243712
 
-// librdiff_capi is not actually used here, but linking it in seems the simplest
+// rdiff_capi is not actually used here, but linking it in seems the simplest
 // way to add a dependency and make sure it's ready to be linked into the C tests.
-extern crate librdiff_capi;
+extern crate rdiff_capi;
 
 use std::process::Command;
 

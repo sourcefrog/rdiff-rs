@@ -1,7 +1,7 @@
 # librdiff-capi-rs [pre-alpha]
 
 This is a C API binding for the
-[Rust librdiff library](https://github.com/sourcefrog/librdiff-rs).
+[Rust rdiff library](https://github.com/sourcefrog/rdiff-rs).
 
 The intention is to be fairly compatible with the existing librsync public API
 ([`librsync.h`](https://github.com/librsync/librsync/blob/master/src/librsync.h)).

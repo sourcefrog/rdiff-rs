@@ -1,5 +1,5 @@
 [package]
-name = "librdiff-capi"
+name = "rdiff-capi"
 version = "0.0.0"
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
 build = "build.rs"
@@ -10,4 +10,4 @@ crate-type = ["staticlib", "rlib"]
 
 [dependencies]
 libc = "0.2"
-librdiff = { version = "0", path = ".." }
+rdiff = { version = "0", path = ".." }

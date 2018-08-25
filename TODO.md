@@ -1,9 +1,13 @@
+# rdiff-rs TODO
+
 * Parameterize signature generation by file format to support different strong and weak sums?
 
 * Error type for this crate?
 
 * Maybe accumulate stats about how much was read, written, etc.
 
-* Maybe rename crate and repo to just `rdiff`? 
+## C API
 
-  (Reduces stuttering in file names, makes it easier to get the binary tool, better Rust style?)
+* Fix compilation to work on Windows, preferably without Make. Use the C compiler crate?
+
+* Make sure the Rust library is actually built before trying to run the C tests?

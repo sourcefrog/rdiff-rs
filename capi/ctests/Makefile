@@ -12,9 +12,9 @@ check: $(BIN)
 
 SRCS = src/ctests.c src/version_test.c
 
-$(BIN): $(TARGET)/liblibrdiff_capi.a $(SRCS)
+$(BIN): $(TARGET)/librdiff_capi.a $(SRCS)
 	$(CC) -o $@ $(SRCS) $(CFLAGS) \
-		-L $(TARGET)/ -l librdiff_capi \
+		-L $(TARGET)/ -l rdiff_capi \
 		-I ../include
 
 clean:

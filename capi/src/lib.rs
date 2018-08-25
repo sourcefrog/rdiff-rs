@@ -1,8 +1,8 @@
-// librdiff-rs capi -- C api to a Rust library for network deltas.
+// rdiff-rs capi -- C api to a Rust library for network deltas.
 // Copyright 2015, 2016, 2018 Martin Pool.
 
 extern crate libc;
-extern crate librdiff;
+extern crate rdiff;
 
 /// Nul-terminated version number for ease of C binding.
 // 
@@ -86,11 +86,11 @@ pub fn test_versions_consistent() {
     // I can't work out how to automatically store a static CString, but
     // let's at least check they're in sync, and that ours has a nul.
     assert_eq!(VERSION.as_bytes()[VERSION.len()-1], 0);
-    let their_v = librdiff::VERSION;
+    let their_v = rdiff::VERSION;
     let l = their_v.len();
     assert_eq!(VERSION.len(), l + 1);
     assert_eq!(VERSION[0..l], their_v.to_string());
 
-    // It should also be consistent with the Cargo version for librdiff-capi-rs.
+    // It should also be consistent with the Cargo version for rdiff-capi-rs.
     assert_eq!(their_v, env!("CARGO_PKG_VERSION"));
 }

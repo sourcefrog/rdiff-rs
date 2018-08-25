@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <librdiff.h>
+#include <rdiff.h>
 
 #include "rdiff_capi_ctests.h"
 
