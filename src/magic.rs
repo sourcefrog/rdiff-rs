@@ -7,13 +7,18 @@
  
 #![allow(dead_code)]
 
-/// u32-be markers at the start of rdiff files.
-pub enum Magic {
+/// Delta file formats.
+#[derive(Debug, Copy, Clone)]
+pub enum DeltaFormat {
     /// A delta file. 
     ///
     /// There's only one format so far.
     Delta = 0x72730236,    // "rs\x026"
+}
 
+/// Signature file formats.
+#[derive(Debug, Copy, Clone)]
+pub enum SignatureFormat {
     /// A signature file with MD4 magic. (Deprecated because insecure).
     Md4Sig = 0x72730136,   // "rs\x016"
 

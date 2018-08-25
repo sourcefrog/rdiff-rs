@@ -8,7 +8,13 @@
 //!
 //! Homepage: <https://github.com/sourcefrog/librdiff-rs>.
 
+extern crate byteorder;
+
+pub mod magic;
+pub mod mksum;
 pub mod rollsum;
 
 /// Semver string for this library.
 pub static VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
+pub const DEFAULT_BLOCK_LEN: u32 = 2048;
