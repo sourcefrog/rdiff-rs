@@ -5,6 +5,7 @@ authors = ["Martin Pool <mbp@sourcefrog.net>"]
 description = "Generate and apply diffs relative to file signatures, like rdiff."
 repository = "https://github.com/sourcefrog/librdiff-rs"
 categories = ["algorithms"]
+license = "MIT"
 
 [badges]
 maintenance = { status = "experimental" }
