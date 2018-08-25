@@ -1,0 +1,14 @@
+install:
+  - ps: Start-FileDownload 'https://static.rust-lang.org/dist/rust-beta-x86_64-pc-windows-msvc.exe'
+  - rust-beta-x86_64-pc-windows-msvc.exe /VERYSILENT /NORESTART /DIR="C:\Program Files (x86)\Rust"
+  - SET PATH=%PATH%;C:\Program Files (x86)\Rust\bin
+  - SET RUST_BACKTRACE=1
+  - rustc -V
+  - cargo -V
+
+build: false
+
+test_script:
+  - cargo test -j4 --verbose 
+  - cargo test -j4 --verbose --manifest-path capi/Cargo.toml
+  - cargo test -j4 --verbose --manifest-path capi/ctests/Cargo.toml
