@@ -34,4 +34,4 @@ The plan is to provide this in four layers:
      new file.
   3. (It's not required they produce the exact same delta.)
 
-More plans: <https://github.com/sourcefrog/librsync-rs/wiki>
+More plans: <https://github.com/sourcefrog/librdiff-rs/wiki>
