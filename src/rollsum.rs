@@ -8,13 +8,31 @@
 
 use std::num::Wrapping;
 
-/// We should make this something other than zero to improve the checksum
-/// algorithm: tridge suggests a prime number.
-const CHAR_OFFSET: Wrapping<u16> = Wrapping(31u16);
+/// Generic rollsum algorithm trait.
+///
+/// Rollsums hold a checksum across a contiguous range of bytes, which can roll
+/// forward through a file, adding a new byte to the right hand side and, separately
+/// removing one from the end.
+pub trait Rollsum {
+    /// Return consolidated u32 rolling sum digest.
+    fn digest(&self) -> u32;
 
-/// Accumulated rollsum state.
+    /// Add one byte of data to the leading end of the rolling sum window.
+    fn roll_in(&mut self, c_in: u8);
+
+    /// Remove one byte of data from the trailing end of the rolling sum window.
+    fn roll_out(&mut self, c_out: u8);
+
+    /// In a single operation add one byte to the leading end and remove one byte from the trailing end.
+    fn rotate(&mut self, c_out: u8, c_in: u8);
+
+    /// Add a slice of bytes to the rollsum state.
+    fn update(&mut self, buf: &[u8]);
+}
+
+/// The rollsum algorithm used by rdiff 1.0 and 2.0.
 #[derive(Debug, Default, Copy, Clone)]
-pub struct Rollsum {
+pub struct Rollsum1 {
     /// Truncated number of bytes included in the summed state.
     count: Wrapping<u16>,
 
@@ -24,41 +42,43 @@ pub struct Rollsum {
     s2: Wrapping<u16>,
 }
 
-impl Rollsum {
-    pub fn new() -> Rollsum {
-        Rollsum::default()
-    }
+impl Rollsum1 {
+    /// We should make this something other than zero to improve the checksum
+    /// algorithm: tridge suggests a prime number.
+    const CHAR_OFFSET: Wrapping<u16> = Wrapping(31);
 
-    /// Return consolidated u32 rolling sum digest.
-    pub fn digest(&self) -> u32 {
+    pub fn new() -> Rollsum1 {
+        Rollsum1::default()
+    }
+}
+
+impl Rollsum for Rollsum1 {
+    fn digest(&self) -> u32 {
         (self.s2.0 as u32) << 16 | (self.s1.0 as u32)
     }
 
-    /// Add ("roll in") one byte of input to the sum.
-    pub fn roll_in(&mut self, a: u8) {
-        self.s1 += CHAR_OFFSET + Wrapping(a as u16);
+    fn roll_in(&mut self, c_in: u8) {
+        self.s1 += Rollsum1::CHAR_OFFSET + Wrapping(c_in as u16);
         self.s2 += self.s1;
         self.count += Wrapping(1);
     }
 
-    pub fn roll_out(&mut self, c_out: u8) {
+    fn roll_out(&mut self, c_out: u8) {
         let c_out = Wrapping(c_out as u16);
-        self.s1 -= c_out + CHAR_OFFSET;
-        self.s2 -= self.count * (c_out + CHAR_OFFSET);
+        self.s1 -= c_out + Rollsum1::CHAR_OFFSET;
+        self.s2 -= self.count * (c_out + Rollsum1::CHAR_OFFSET);
         self.count -= Wrapping(1);
     }
 
-    /// Remove one byte from the tail, and add a new one at the head, rolling forward.
-    pub fn rotate(&mut self, c_out: u8, c_in: u8) {
+    fn rotate(&mut self, c_out: u8, c_in: u8) {
         let c_in = Wrapping(c_in as u16);
         let c_out = Wrapping(c_out as u16);
         // TODO: Fix wrapping
         self.s1 += c_in - c_out;
-        self.s2 += self.s1 - (self.count * (c_out + CHAR_OFFSET));
+        self.s2 += self.s1 - (self.count * (c_out + Rollsum1::CHAR_OFFSET));
     }
 
-    /// Update the state from a block of bytes.Rollsum.
-    pub fn update(&mut self, buf: &[u8]) {
+    fn update(&mut self, buf: &[u8]) {
         let mut s1 = self.s1;
         let mut s2 = self.s2;
         for c in buf {
@@ -69,8 +89,8 @@ impl Rollsum {
         let ll = Wrapping(buf.len() as u16);
         let trilen = Wrapping(((len * (len + 1)) / 2) as u16);
         // Now add the corresponding char offsets.
-        s1 += ll * CHAR_OFFSET;
-        s2 += trilen * CHAR_OFFSET;
+        s1 += ll * Rollsum1::CHAR_OFFSET;
+        s2 += trilen * Rollsum1::CHAR_OFFSET;
 
         self.count += ll;
         self.s1 = s1;
@@ -81,11 +101,11 @@ impl Rollsum {
 
 #[cfg(test)]
 mod test {
-    use super::Rollsum;
+    use super::{Rollsum, Rollsum1};
 
     #[test]
     pub fn default_value() {
-        let rs = Rollsum::new();
+        let rs = Rollsum1::new();
         assert_eq!(rs.count.0, 0);
         assert_eq!(rs.s1.0, 0);
         assert_eq!(rs.s2.0, 0);
@@ -95,7 +115,7 @@ mod test {
     #[test]
     pub fn rollsum() {
         // TODO: Check behavior on high u8 inputs, and check against C librsync.
-        let mut rs = Rollsum::new();
+        let mut rs = Rollsum1::new();
         rs.roll_in(0u8);
         assert_eq!(rs.count.0, 1);
         assert_eq!(rs.digest(), 0x001f001f);
@@ -135,7 +155,7 @@ mod test {
 
     #[test]
     pub fn update() {
-        let mut rs = Rollsum::new();
+        let mut rs = Rollsum1::new();
         let mut buf = [0u8; 256];
         for i in 0..buf.len() {
             buf[i] = i as u8;
