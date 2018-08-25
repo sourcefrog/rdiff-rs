@@ -1,3 +1,7 @@
+/* Rust rdiff C FFI bindings.
+ * Copyright 2018 Martin Pool.
+ */
+
 /**
  * \enum rs_result
  * \brief Return codes from nonblocking rsync operations.

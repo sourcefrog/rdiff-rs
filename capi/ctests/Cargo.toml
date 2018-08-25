@@ -1,0 +1,14 @@
+[package]
+name = "rdiff-capi-ctests"
+version = "0.0.0"
+authors = ["Martin Pool <mbp@sourcefrog.net>"]
+build = "build.rs"
+license = "MIT"
+publish = false  # Internal tests; aren't interesting to publish by themselves.
+
+[dependencies]
+libc = "0.2"
+rdiff-capi = { version = "0", path = ".." }
+
+[build-dependencies]
+cc = "1.0"

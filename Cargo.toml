@@ -10,11 +10,8 @@ license = "MIT"
 [badges]
 maintenance = { status = "experimental" }
 
-[lib]
-crate-type = ["rlib", "dylib", "lib"]
-
 [workspace]
-members = ["capi"]
+members = ["capi", "capi/ctests"]
 
 [dependencies]
 byteorder = "1"

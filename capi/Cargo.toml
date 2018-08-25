@@ -2,11 +2,11 @@
 name = "rdiff-capi"
 version = "0.0.0"
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
-build = "build.rs"
 license = "MIT"
 
 [lib]
-crate-type = ["staticlib", "rlib"]
+name = "rdiff_capi"
+crate-type = ["staticlib", "cdylib", "rlib"]
 
 [dependencies]
 libc = "0.2"
