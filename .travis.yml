@@ -1,0 +1,8 @@
+language: rust
+sudo: false
+rust:
+  - beta
+cache: cargo
+os:
+ - linux
+ - osx
