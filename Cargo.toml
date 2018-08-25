@@ -2,6 +2,12 @@
 name = "librdiff"
 version = "3.0.0"
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
+description = "Generate and apply diffs relative to file signatures, like rdiff."
+repository = "https://github.com/sourcefrog/librdiff-rs"
+categories = ["algorithms"]
+
+[badges]
+maintenance = { status = "experimental" }
 
 [lib]
 crate-type = ["rlib", "dylib", "lib"]
