@@ -18,11 +18,40 @@
 extern crate libc;
 extern crate librdiff;
 
-use librdiff::RsResult;
-use librdiff::RsResult::*;
-
 /// Nul-terminated version number for ease of C binding.
 pub static VERSION: &'static str = "3.0.0\0";
+
+// NB: These should stay in sync with the C result enums.
+//
+// TODO: Maybe these should be attributes of rust-library error types?
+#[repr(C)]
+pub enum RsResult {
+    Done = 0,
+
+    /// Blocked waiting for more data.
+    Blocked =    1,
+
+    /// The job is still running, and not yet finished or blocked.
+    Running  =       2,
+
+    TestSkipped =   77,     //< Test neither passed or failed.
+
+    IoError =    100,    //< Error in file or network IO. */
+    SyntaxError =   101,    //< Command line syntax error. */
+    MemError =    102,    //< Out of memory. */
+    /// Unexpected end of input file, perhaps due to a truncated file
+    /// or dropped network connection.
+    InputEnded =    103,
+    /// Bad magic number at start of stream.  Probably not a librsync file,
+    /// or possibly the wrong kind of file or from an incompatible
+    /// library version.
+    BadMagic =      104,
+    Unimplemented =  105,    //< Author is lazy. */
+    Corrupt =        106,    //< Unbelievable value in stream. */
+    InternalError = 107,    //< Probably a library bug. */
+    /// Bad value passed in to library, probably an application bug.
+    ParamErorr =    108,
+}
 
 #[no_mangle]
 pub extern fn rs_version() -> *const libc::c_char {
@@ -33,7 +62,7 @@ pub extern fn rs_version() -> *const libc::c_char {
 #[no_mangle]
 pub extern fn rs_strerror(r: RsResult) -> *const libc::c_char {
     match r {
-        RS_DONE => b"OK\0".as_ptr() as *const libc::c_char,
+        RsResult::Done => b"OK\0".as_ptr() as *const libc::c_char,
 
         // case RS_DONE:
         //     return "OK";
