@@ -6,7 +6,7 @@ authors = ["Martin Pool <mbp@sourcefrog.net>"]
 [lib]
 # See https://github.com/rust-lang/rust/issues/19680
 # XXX: Is this still needed with separated crates?
-## crate-type = ["rlib", "dylib", "lib"]
+crate-type = ["rlib", "dylib", "lib"]
 
 [workspace]
 members = ["capi"]

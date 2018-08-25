@@ -18,7 +18,7 @@ The plan is to provide this in four layers:
     format and command line syntax with
     `rdiff` from C librsync.
 
-* `capi/`:
+* `capi/`, crate `librdiff-capi`:
     A C API backed by the Rust implementation.
   * The same as the existing librsync C API except where this is
     infeasible or the existing API is very problematic.

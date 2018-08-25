@@ -1,5 +1,5 @@
 // librdiff(rust) -- library for network deltas
-// Copyright 2015, 2016 Martin Pool.
+// Copyright 2015, 2016, 2018 Martin Pool.
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
@@ -15,35 +15,64 @@
 // License along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+extern crate libc;
+extern crate librdiff;
 
-// TODO: Expose version string and number.
+use librdiff::RsResult;
+use librdiff::RsResult::*;
 
+/// Nul-terminated version number for ease of C binding.
+pub static VERSION: &'static str = "3.0.0\0";
 
-#[repr(C)]
-pub enum RsResult {
-    RS_DONE = 0,
+#[no_mangle]
+pub extern fn rs_version() -> *const libc::c_char {
+    // Version from environment has nul termination (I think we can count on this?)
+    return VERSION.as_ptr() as *const libc::c_char;
+}
 
-    /// Blocked waiting for more data.
-    RS_BLOCKED =    1,
+#[no_mangle]
+pub extern fn rs_strerror(r: RsResult) -> *const libc::c_char {
+    match r {
+        RS_DONE => b"OK\0".as_ptr() as *const libc::c_char,
 
-    /// The job is still running, and not yet finished or blocked.
-    RS_RUNNING  =       2,
+        // case RS_DONE:
+        //     return "OK";
+        // case RS_RUNNING:
+        //     return "still running";
+        // case RS_BLOCKED:
+        //     return "blocked waiting for input or output buffers";
+        // case RS_BAD_MAGIC:
+        //     return "bad magic number at start of stream";
+        // case RS_INPUT_ENDED:
+        //     return "unexpected end of input";
+        // case RS_CORRUPT:
+        //     return "stream corrupt";
+        // case RS_UNIMPLEMENTED:
+        //     return "unimplemented case";
+        // case RS_MEM_ERROR:
+        //     return "out of memory";
+        // case RS_IO_ERROR:
+        //     return "IO error";
+        // case RS_SYNTAX_ERROR:
+        //     return "bad command line syntax";
+        // case RS_INTERNAL_ERROR:
+        //     return "library internal error";
+        //
+        _ => b"unexplained problem\0".as_ptr() as *const libc::c_char,
+    }
+}
 
-    RS_TEST_SKIPPED =   77,     //< Test neither passed or failed.
+#[cfg(test)]
+#[test]
+pub fn test_versions_consistent() {
+    // I can't work out how to automatically store a static CString, but
+    // let's at least check they're in sync, and that ours has a nul.
+    assert_eq!(VERSION.as_bytes()[VERSION.len()-1], 0);
+    let their_v = librdiff::VERSION;
+    let l = their_v.len();
+    assert_eq!(VERSION.len(), l + 1);
+    assert_eq!(VERSION[0..l], their_v.to_string());
 
-    RS_IO_ERROR =    100,    //< Error in file or network IO. */
-    RS_SYNTAX_ERROR =   101,    //< Command line syntax error. */
-    RS_MEM_ERROR =    102,    //< Out of memory. */
-    /// Unexpected end of input file, perhaps due to a truncated file
-    /// or dropped network connection.
-    RS_INPUT_ENDED =    103,
-    /// Bad magic number at start of stream.  Probably not a librsync file,
-    /// or possibly the wrong kind of file or from an incompatible
-    /// library version.
-    RS_BAD_MAGIC =      104,
-    RS_UNIMPLEMENTED =  105,    //< Author is lazy. */
-    RS_CORRUPT =        106,    //< Unbelievable value in stream. */
-    RS_INTERNAL_ERROR = 107,    //< Probably a library bug. */
-    /// Bad value passed in to library,     probably an application bug.
-    RS_PARAM_ERROR =    108,
+    // It should also be consistent with the Cargo version for librdiff-capi-rs.
+    assert_eq!(their_v, env!("CARGO_PKG_VERSION"));
 }
