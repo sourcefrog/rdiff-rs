@@ -6,3 +6,7 @@ cache: cargo
 os:
  - linux
  - osx
+script:
+ - cargo test -j4 --verbose 
+ - cargo test -j4 --verbose --manifest-path capi/Cargo.toml
+ - cargo test -j4 --verbose --manifest-path capi/ctests/Cargo.toml
