@@ -8,7 +8,7 @@
 //!
 //! Homepage: <https://github.com/sourcefrog/librdiff-rs>.
 
-mod rollsum;
+pub mod rollsum;
 
 /// Semver string for this library.
 pub static VERSION: &'static str = env!("CARGO_PKG_VERSION");
