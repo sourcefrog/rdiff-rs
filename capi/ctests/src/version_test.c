@@ -7,7 +7,7 @@
 
 bool version_test(void) {
     const char* v = rs_version();
-    const char* e = "3.0.0";
+    const char* e = "0.0.0";
     if (strcmp(v, e)) {
         printf("Unexpected version \"%s\", wanted \"%s\"\n", v, e);
         return false;

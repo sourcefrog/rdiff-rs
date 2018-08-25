@@ -19,7 +19,10 @@ extern crate libc;
 extern crate librdiff;
 
 /// Nul-terminated version number for ease of C binding.
-pub static VERSION: &'static str = "3.0.0\0";
+// 
+// Unfortunately this can't be automatically generated from the crate
+// version, it seems.
+pub static VERSION: &'static str = "0.0.0\0";
 
 // NB: These should stay in sync with the C result enums.
 //
