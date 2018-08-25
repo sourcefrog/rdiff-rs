@@ -1,8 +1,11 @@
 // librdiff(rust) -- library for network deltas
 // Copyright 2018 Martin Pool.
 
+
 //! Weak rolling checksums: the first layer of rdiff finding similar blocks between
 //! files, even with insertions or removals.
+
+#![allow(dead_code)]
 
 /// We should make this something other than zero to improve the checksum
 /// algorithm: tridge suggests a prime number.
