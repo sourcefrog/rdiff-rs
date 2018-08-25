@@ -3,6 +3,7 @@ name = "librdiff-capi"
 version = "0.0.0"
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
 build = "build.rs"
+license = "MIT"
 
 [lib]
 crate-type = ["staticlib", "rlib"]
