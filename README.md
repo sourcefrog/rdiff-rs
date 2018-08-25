@@ -3,7 +3,8 @@
 This is the start of a compatible pure Rust implementation of librsync.
 
 To reduce confusion with the `rsync` tool and with the C implementation, this
-is called `librdiff` but the formats, capabilities and API will be the same.
+is called `librdiff` but the formats, capabilities and API will be the same as
+`librsync` (and not the same as `rsync`).
 
 The plan is to provide this in four layers:
 
