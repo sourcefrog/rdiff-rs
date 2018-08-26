@@ -14,5 +14,6 @@ maintenance = { status = "experimental" }
 members = ["capi", "capi/ctests"]
 
 [dependencies]
+blake2 = "0.7.1"
 byteorder = "1"
 cast = "0.2.2"

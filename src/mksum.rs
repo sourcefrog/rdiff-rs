@@ -7,8 +7,8 @@
 //! access to the old file.
 
 use std::io::{BufWriter, Read, Write, Result};
-use std::vec::Vec;
 
+use blake2::{Blake2b, Digest};
 use byteorder::{BigEndian, WriteBytesExt};
 use cast::usize;
 
@@ -86,10 +86,12 @@ fn fill_buffer(inf: &mut Read, buf: &mut [u8]) -> Result<usize> {
 
 /// Generate a signature, reading a basis file and writing a signature file.
 pub fn generate_signature(basis: &mut Read, options: &SignatureOptions, sig: &mut Write) -> Result<()> {
+    // TODO: Use hashers selected by the options.
+
     // This cast should be always be safe on 32-bit platforms and will work on platforms
     // with 16-bit pointers (I think) as long as the blocks are <64k. And blocks that are
     // too large to fit in memory aren't likely to work well anyhow...
-    let mut buf = Vec::with_capacity(usize(options.block_len));
+    let mut buf = vec![0; usize(options.block_len)];
 
     let sig = &mut BufWriter::new(sig);
     write_u32be(sig, options.magic as u32)?;
@@ -98,6 +100,7 @@ pub fn generate_signature(basis: &mut Read, options: &SignatureOptions, sig: &mu
 
     loop {
         let l = fill_buffer(basis, &mut buf)?;
+        println!("got {} bytes", l); 
         if l == 0 { break; }
         let b = &buf[..l];
         {
@@ -105,7 +108,10 @@ pub fn generate_signature(basis: &mut Read, options: &SignatureOptions, sig: &mu
             rs.update(b);
             write_u32be(sig, rs.digest())?;
         }
-        // TODO: Calculate and write out strong sum!
+        {
+            let ss = &Blake2b::digest(b)[..(options.strong_len as usize)];
+            sig.write(ss)?;
+        }
         if l < buf.len() { break; } // Short block must be the last.
     }
     Ok(())
@@ -116,19 +122,32 @@ mod test {
     use std::vec::Vec;
     use std::io::Cursor;
     use super::*;
+
+    fn generate_signature_on_arrays(in_buf: &[u8]) -> Vec<u8> {
+        let mut out_buf = Cursor::new(Vec::<u8>::new());
+        let options = SignatureOptions::default();
+        assert_eq!(options.block_len, 2 << 10);
+        println!("get sig on {:} byte array", in_buf.len());
+
+        generate_signature(&mut in_buf.as_ref(), &options, &mut out_buf).unwrap();
+        out_buf.into_inner()
+    }
     
     #[test]
     pub fn empty_signature_header() {
-        let mut sig_buf = Cursor::new(Vec::<u8>::new());
-        let mut empty_input = Cursor::new(Vec::<u8>::new());
-        let options = SignatureOptions::default();
-        assert_eq!(options.block_len, 2 << 10);
-
-        generate_signature(&mut empty_input, &options, &mut sig_buf).unwrap();
-        assert_eq!(*sig_buf.get_ref(),
+        let out_buf = generate_signature_on_arrays(&[]);
+        assert_eq!(out_buf.as_slice(),
             [b'r', b's', 0x01, 0x37,  // BLAKE2 sig magic
             0, 0, 8, 0, // 2kB blocks
             0, 0, 0, 8, // 8 byte BLAKE2 hashes
             ]);
+    }
+
+    // TODO: Test for generation of a more interesting file.
+    #[test]
+    pub fn small_file() {
+        let out_buf = generate_signature_on_arrays("Hello world\n".as_bytes());
+        // Should have: 12-byte header, 1x(4-byte weak sum, 8-byte strong sum.)
+        assert_eq!(out_buf.len(), 12 + 4 + 8);
     }
 }

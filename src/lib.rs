@@ -8,6 +8,7 @@
 //!
 //! Homepage: <https://github.com/sourcefrog/rdiff-rs>.
 
+extern crate blake2;
 extern crate byteorder;
 extern crate cast;
 
