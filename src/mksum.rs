@@ -141,11 +141,14 @@ mod test {
             ]);
     }
 
-    // TODO: Test for generation of a more interesting file.
+    // TODO: Test for generation of a more interesting file, and examine the actual
+    // output.
     #[test]
     pub fn small_file() {
         let out_buf = generate_signature_on_arrays("Hello world\n".as_bytes());
         // Should have: 12-byte header, 1x(4-byte weak sum, 8-byte strong sum.)
         assert_eq!(out_buf.len(), 12 + 4 + 8);
     }
+
+    // TODO: Test larger files against known hashes.
 }
