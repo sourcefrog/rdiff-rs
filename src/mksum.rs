@@ -100,7 +100,6 @@ pub fn generate_signature(basis: &mut Read, options: &SignatureOptions, sig: &mu
 
     loop {
         let l = fill_buffer(basis, &mut buf)?;
-        println!("got {} bytes", l); 
         if l == 0 { break; }
         let b = &buf[..l];
         {
@@ -127,7 +126,6 @@ mod test {
         let mut out_buf = Cursor::new(Vec::<u8>::new());
         let options = SignatureOptions::default();
         assert_eq!(options.block_len, 2 << 10);
-        println!("get sig on {:} byte array", in_buf.len());
 
         generate_signature(&mut in_buf.as_ref(), &options, &mut out_buf).unwrap();
         out_buf.into_inner()
