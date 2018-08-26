@@ -2,7 +2,7 @@
 name = "rdiff"
 version = "0.0.0"  # Eventually this will step to "3.0.0" to match with C librsync.
 authors = ["Martin Pool <mbp@sourcefrog.net>"]
-description = "Generate and apply diffs relative to file signatures, like rdiff."
+description = "Generate and apply diffs relative to file signatures, like rdiff. (Rust version.)"
 repository = "https://github.com/sourcefrog/rdiff-rs"
 categories = ["algorithms"]
 license = "MIT"
@@ -17,3 +17,4 @@ members = ["capi", "capi/ctests"]
 blake2 = "0.7.1"
 byteorder = "1"
 cast = "0.2.2"
+clap = "2.32"
