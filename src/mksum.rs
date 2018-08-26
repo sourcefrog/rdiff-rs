@@ -1,4 +1,4 @@
-// rdiff(rust) -- library for network deltas
+// rdiff (Rust) network deltas.
 // Copyright 2018 Martin Pool.
 
 //! Generate file signatures.
@@ -7,9 +7,13 @@
 //! access to the old file.
 
 use std::io::{BufWriter, Read, Write, Result};
+use std::vec::Vec;
+
 use byteorder::{BigEndian, WriteBytesExt};
+use cast::usize;
 
 use super::magic::SignatureFormat;
+use super::rollsum::{Rollsum, Rollsum1};
 
 /// Configuration options for a generated signature file.
 /// 
@@ -48,13 +52,62 @@ fn write_u32be(f: &mut Write, a: u32) -> Result<()> {
     f.write_u32::<BigEndian>(a)
 }
 
+/// Fill a block buffer with data from the input file, retrying if necessary.
+///
+/// There are three possibilities:
+/// 
+/// 1. The input is already at end-of-file: we read zero bytes and will not try again.
+/// 
+/// 2. There's a regular full size block.
+/// 
+/// 3. There is less than a full block, and then the end of the file. In this case we
+/// return the contents, but we don't want to try again next time, as that could generate
+/// two short blocks.
+/// 
+/// We need to distinguish these even though any particular read from the file might
+/// return short. There might be following blocks iff this block is full sized.
+/// 
+/// `buf.len()` is the block length.
+/// 
+/// Returns Ok(bytes_read).
+fn fill_buffer(inf: &mut Read, buf: &mut [u8]) -> Result<usize> {
+    let mut bytes_read: usize = 0;
+    while bytes_read < buf.len() {
+        let l = inf.read(&mut buf[bytes_read..])?;
+        if l == 0 {
+            break; // eof
+        } else {
+            bytes_read += l;
+        }
+    }
+    return Ok(bytes_read);
+
+}
+
 /// Generate a signature, reading a basis file and writing a signature file.
-pub fn generate_signature(_basis: &mut Read, options: &SignatureOptions, sig: &mut Write) -> Result<()> {
-    let mut sig = BufWriter::new(sig);
-    write_u32be(&mut sig, options.magic as u32)?;
-    write_u32be(&mut sig, options.block_len)?;
-    write_u32be(&mut sig, options.strong_len)?;
-    // TODO: Actually hash all the blocks!
+pub fn generate_signature(basis: &mut Read, options: &SignatureOptions, sig: &mut Write) -> Result<()> {
+    // This cast should be always be safe on 32-bit platforms and will work on platforms
+    // with 16-bit pointers (I think) as long as the blocks are <64k. And blocks that are
+    // too large to fit in memory aren't likely to work well anyhow...
+    let mut buf = Vec::with_capacity(usize(options.block_len));
+
+    let sig = &mut BufWriter::new(sig);
+    write_u32be(sig, options.magic as u32)?;
+    write_u32be(sig, options.block_len)?;
+    write_u32be(sig, options.strong_len)?;
+
+    loop {
+        let l = fill_buffer(basis, &mut buf)?;
+        if l == 0 { break; }
+        let b = &buf[..l];
+        {
+            let mut rs = Rollsum1::new();
+            rs.update(b);
+            write_u32be(sig, rs.digest())?;
+        }
+        // TODO: Calculate and write out strong sum!
+        if l < buf.len() { break; } // Short block must be the last.
+    }
     Ok(())
 }
 

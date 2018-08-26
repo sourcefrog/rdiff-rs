@@ -9,6 +9,7 @@
 //! Homepage: <https://github.com/sourcefrog/rdiff-rs>.
 
 extern crate byteorder;
+extern crate cast;
 
 pub mod magic;
 pub mod mksum;
