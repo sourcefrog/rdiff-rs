@@ -153,7 +153,7 @@ mod test {
         assert_eq!(out_buf.as_slice(),
             [b'r', b's', 0x01, 0x37,  // BLAKE2 sig magic
             0, 0, 8, 0, // 2kB blocks
-            0, 0, 0, 8, // 8 byte BLAKE2 hashes
+            0, 0, 0, 32, // 32 byte BLAKE2 hashes
             ]);
     }
 
@@ -162,8 +162,8 @@ mod test {
     #[test]
     pub fn small_file() {
         let out_buf = generate_signature_on_arrays("Hello world\n".as_bytes());
-        // Should have: 12-byte header, 1x(4-byte weak sum, 8-byte strong sum.)
-        assert_eq!(out_buf.len(), 12 + 4 + 8);
+        // Should have: 12-byte header, 1x(4-byte weak sum, 32-byte strong sum.)
+        assert_eq!(out_buf.len(), 12 + 4 + 32);
     }
 
     // TODO: Test larger files against known hashes.
