@@ -8,15 +8,19 @@
 
 use std::io::{BufWriter, Read, Write, Result};
 
-use blake2::{Blake2b, Digest};
+use blake2::{Blake2b};
+use blake2::digest::{Input, VariableOutput};
 use byteorder::{BigEndian, WriteBytesExt};
 use cast::usize;
 
 use super::magic::SignatureFormat;
 use super::rollsum::{Rollsum, Rollsum1};
 
+// Must match that in rdiff.
+const RS_MAX_STRONG_SUM_LENGTH: usize = 32;
+
 /// Configuration options for a generated signature file.
-/// 
+///
 /// The values from `SignatureOptions::default()` are usually good, but applications
 /// might want to set the `block_len`.
 #[derive(Debug, Copy, Clone)]
@@ -25,13 +29,13 @@ pub struct SignatureOptions {
     pub magic: SignatureFormat,
 
     /// Length of a block in bytes.
-    /// 
+    ///
     /// Smaller blocks produce larger signatures because there are more blocks, but allow matching
     /// smaller common regions between files.
     pub block_len: u32,
 
     /// Length of strong signatures.
-    /// 
+    ///
     /// This is normally best left at the default, which is the strong hash, but
     /// they may be truncated to get smaller signatures although with a risk of exploitable
     /// collisions.
@@ -43,7 +47,7 @@ impl SignatureOptions {
         SignatureOptions {
             magic: SignatureFormat::Blake2Sig,
             block_len: super::DEFAULT_BLOCK_LEN,
-            strong_len: 8, // Whole Blake2 hash length.
+            strong_len: RS_MAX_STRONG_SUM_LENGTH as u32,
         }
     }
 }
@@ -55,20 +59,20 @@ fn write_u32be(f: &mut Write, a: u32) -> Result<()> {
 /// Fill a block buffer with data from the input file, retrying if necessary.
 ///
 /// There are three possibilities:
-/// 
+///
 /// 1. The input is already at end-of-file: we read zero bytes and will not try again.
-/// 
+///
 /// 2. There's a regular full size block.
-/// 
+///
 /// 3. There is less than a full block, and then the end of the file. In this case we
 /// return the contents, but we don't want to try again next time, as that could generate
 /// two short blocks.
-/// 
+///
 /// We need to distinguish these even though any particular read from the file might
 /// return short. There might be following blocks iff this block is full sized.
-/// 
+///
 /// `buf.len()` is the block length.
-/// 
+///
 /// Returns Ok(bytes_read).
 fn fill_buffer(inf: &mut Read, buf: &mut [u8]) -> Result<usize> {
     let mut bytes_read: usize = 0;
@@ -108,8 +112,13 @@ pub fn generate_signature(basis: &mut Read, options: &SignatureOptions, sig: &mu
             write_u32be(sig, rs.digest())?;
         }
         {
-            let ss = &Blake2b::digest(b)[..(options.strong_len as usize)];
-            sig.write(ss)?;
+            // C rdiff uses the slightly odd thing of specifying the 'max' (32) as the
+            // hasher output length, then throwing away some of the digest. OK.
+            let mut hasher = Blake2b::new(RS_MAX_STRONG_SUM_LENGTH as usize).unwrap();
+            hasher.process(b);
+            let mut d = [0u8; RS_MAX_STRONG_SUM_LENGTH];
+            hasher.variable_result(&mut d).unwrap();
+            sig.write(&d[..(options.strong_len as usize)])?;
         }
         if l < buf.len() { break; } // Short block must be the last.
     }
@@ -130,7 +139,7 @@ mod test {
         generate_signature(&mut in_buf.as_ref(), &options, &mut out_buf).unwrap();
         out_buf.into_inner()
     }
-    
+
     #[test]
     pub fn empty_signature_header() {
         let out_buf = generate_signature_on_arrays(&[]);
