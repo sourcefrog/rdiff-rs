@@ -43,8 +43,6 @@ pub struct Rollsum1 {
 }
 
 impl Rollsum1 {
-    /// We should make this something other than zero to improve the checksum
-    /// algorithm: tridge suggests a prime number.
     const CHAR_OFFSET: Wrapping<u16> = Wrapping(31);
 
     pub fn new() -> Rollsum1 {
@@ -73,7 +71,6 @@ impl Rollsum for Rollsum1 {
     fn rotate(&mut self, c_out: u8, c_in: u8) {
         let c_in = Wrapping(c_in as u16);
         let c_out = Wrapping(c_out as u16);
-        // TODO: Fix wrapping
         self.s1 += c_in - c_out;
         self.s2 += self.s1 - (self.count * (c_out + Rollsum1::CHAR_OFFSET));
     }
