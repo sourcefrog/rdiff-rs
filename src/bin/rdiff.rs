@@ -26,7 +26,13 @@ pub fn main() {
                 .help("Basis file to read, or - for stdin"))
             .arg(Arg::with_name("signature")
                 .required(true)
-                .help("Signature file to write, or - for stdout")));
+                .help("Signature file to write, or - for stdout"))
+            .arg(Arg::with_name("sum_size")
+                .short("S")
+                .long("sum-size")
+                .takes_value(true)
+                .help("Set strong sum strength, in bytes"))
+            );
 
 
     let r = match app.get_matches().subcommand() {
@@ -42,7 +48,10 @@ pub fn main() {
 fn signature_cmd(subm: &ArgMatches) -> Result<()> {
     let mut basis = open_input(subm.value_of_os("basis").unwrap())?;
     let mut sig = open_output(subm.value_of_os("signature").unwrap())?;
-    let options = SignatureOptions::default();
+    let mut options = SignatureOptions::default();
+    if let Some(s) = subm.value_of("sum_size") {
+        options = options.with_strong_len(s.parse::<u32>().expect("sum_size isn't an integer"));
+    }
     generate_signature(&mut basis, &options, &mut sig)
 }
 
