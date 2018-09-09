@@ -50,6 +50,13 @@ impl SignatureOptions {
             strong_len: RS_MAX_STRONG_SUM_LENGTH as u32,
         }
     }
+
+    pub fn with_strong_len(self, s: u32) -> SignatureOptions {
+        SignatureOptions {
+            strong_len: s,
+            .. self
+        }
+    }
 }
 
 fn write_u32be(f: &mut Write, a: u32) -> Result<()> {
