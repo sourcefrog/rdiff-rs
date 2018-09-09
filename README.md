@@ -5,7 +5,7 @@ the contents of an old file. The deltas can only be applied to the exact old fil
 contents from which they're generated.
 
 This is the start of a pure Rust implementation of rdiff, both the command line
-tool and the library. 
+tool and the library.
 The original C implementation is at https://github.com/librsync/librsync.
 
 rdiff uses the same algorithm, but not the same format, as rsync.
@@ -38,9 +38,19 @@ The plan is to provide this in four layers:
 
 More plans: <https://github.com/sourcefrog/rdiff-rs/wiki>
 
+## Installation
+
+First, install the Rust toolchain from https://rustup.rs/.
+
+You may then either:
+
+1. Run `cargo build --release` which will create an rdiff binary (and library) in the `target/release` directory.
+
+2. Or, run `cargo install -f` which will also install those binaries into `~/.cargo/bin` or something similar.
+
 ## License
 
-Copyright 2015-2019 Martin Pool.
+Copyright 2015-2018 Martin Pool.
 
 Permission is hereby granted, free of charge, to any
 person obtaining a copy of this software and associated
